@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <AssemblyName>checkBlue</AssemblyName>
+    <AssemblyName>checkPWM</AssemblyName>
     <OutputType>Exe</OutputType>
-    <RootNamespace>checkBlue</RootNamespace>
+    <RootNamespace>checkPWM</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{093B4D88-0D50-4C93-AEF4-27413779290C}</ProjectGuid>
+    <ProjectGuid>{248164F5-FA1F-486C-B905-8C7DF467D9BD}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
     <DeployDevice>Netduino</DeployDevice>
@@ -44,11 +44,5 @@
     <Reference Include="SecretLabs.NETMF.Hardware" />
     <Reference Include="SecretLabs.NETMF.Hardware.Netduino" />
     <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\marencoLibraries\Marenco.Comms\Marenco.Comms\Marenco.Comms.csproj">
-      <Project>{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}</Project>
-      <Name>Marenco.Comms</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
