@@ -53,7 +53,7 @@ namespace marencoTune
             blueComms.Write(new byte[] { 0x34,0x35 }, 0, 1);
             byte[] outBuffer = System.Text.Encoding.UTF8.GetBytes("Motor active");
             blueComms.Write(outBuffer, 0, outBuffer.Length);
-            acc.setUpAccelRate(100);
+            acc.setUpAccelRate(200);
 
             //  Snooze
             Thread.Sleep(Timeout.Infinite);
