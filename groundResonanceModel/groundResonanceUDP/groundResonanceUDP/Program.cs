@@ -32,7 +32,7 @@ namespace marencoTune
 {
     public class Program
     {
-        public const int maxSpeed = 145;
+        public const int maxSpeed = 70;
         //  Global instances
         static InterruptPort dataReady = new InterruptPort(Pins.GPIO_PIN_D10, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
         // Channel on the top end of the board.
