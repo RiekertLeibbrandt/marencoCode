@@ -27,12 +27,15 @@ using Marenco.Sensors;
 //  28 June, pull speed change out of read interrupt,
 //  reduce time to 24 bits and in milliseconds.
 //  
+//  13 August, add an Analog accelerometer.
+//  Write out interrupt time as well.
+//
 
 namespace marencoTune
 {
     public class Program
     {
-        public const int maxSpeed = 70;
+        public const int maxSpeed = 180;
         //  Global instances
         static InterruptPort dataReady = new InterruptPort(Pins.GPIO_PIN_D10, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
         // Channel on the top end of the board.
@@ -44,6 +47,7 @@ namespace marencoTune
         public static Microsoft.SPOT.Net.NetworkInformation.NetworkInterface NI = Microsoft.SPOT.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()[0];
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static IPEndPoint sendingEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.231"), 49001);
+        public static AnalogInput analogIn = new AnalogInput(Cpu.AnalogChannel.ANALOG_4);
 
         public static void Main()
         {
@@ -63,6 +67,10 @@ namespace marencoTune
             //a = 1;
 
             //
+            //  Set zero time
+            //
+
+            //
             //  Ramp up the rotor speed
             //
             int speedNow = 0x3c;
@@ -73,11 +81,11 @@ namespace marencoTune
                 motorDrive.Duration = (UInt32)((double)speedNow * 980d / 512d + 1000);
                 if (speedNow > 70)
                 {
-                    Thread.Sleep(750);   // Was 2000
+                    Thread.Sleep(1000);   // Was 2000
                 }
                 else
                 {
-                    Thread.Sleep(150);
+                    Thread.Sleep(100);
                 }
             }
 
@@ -91,7 +99,8 @@ namespace marencoTune
 
             acc.getValues(ref GlobalVariables.x, ref GlobalVariables.y, ref GlobalVariables.z);
             acc.clearInterrupt();
-            Int16 zShort = (Int16)GlobalVariables.z;
+            UInt16 zAnalog = (UInt16) analogIn.ReadRaw();
+            UInt16 zDig = (UInt16) (-GlobalVariables.z + 2048);
 
             //
             //  Conver to bytes and write out.
@@ -104,19 +113,13 @@ namespace marencoTune
             //  Make the minimum on setting 0x3C to save the motor
             //
 
-            if (GlobalVariables.writeNow)
-            {
-                GlobalVariables.writeNow = false;
-                UInt32 ticksOut = (UInt32)time.Ticks;
-                byte[] junk = new byte[6] { 
-                            // Synch word, stick with 2
-                //    (byte)((ticksOut >> 8) & 0xFF), 
-                //    (byte)((ticksOut >> 16) & 0xFF),                        // Only three bytes                
-                //    (byte)((ticksOut >> 24) & 0xFF),                        // Only three bytes                
-                    (byte)(GlobalVariables.zKeep & 0xFF), 
-                    (byte)((GlobalVariables.zKeep >> 8) & 0xFF),                // Only 2 bytes
-                    (byte)(zShort & 0xFF), 
-                    (byte)((zShort >> 8) & 0xFF),               // Only 2 bytes
+                byte[] junk = new byte[8] { 
+                    (byte)(zDig & 0xFF), 
+                    (byte)((zDig >> 8) & 0xFF),                // Only 2 bytes
+                    (byte)(zAnalog & 0xFF),
+                    (byte)((zAnalog >> 8) & 0xFF),
+                    (byte)(GlobalVariables.halTimeShifted & 0xFF), 
+                    (byte)((GlobalVariables.halTimeShifted >> 8) & 0xFF),               // Only 2 bytes
                     (byte)(GlobalVariables.hertz & 0xFF), 
                     (byte)((GlobalVariables.hertz >> 8) & 0xFF)};               // Only 2 bytes
  
@@ -125,20 +128,25 @@ namespace marencoTune
                 //(byte)((GlobalVariables.halTime >> 24) & 0xFF)};        // Only 3 bytes
                 sock.SendTo(junk, sendingEndPoint);
 //                Debug.Print(zShort.ToString());
-            }
-            else
-            {
-                GlobalVariables.writeNow = true;
-                GlobalVariables.zKeep = zShort;
-            }
+
         }
 
         static void hal_OnInterrupt(uint data1, uint data2, DateTime time)
         {
-            GlobalVariables.halTime = time.Ticks / 10000000.0d;
-            GlobalVariables.hertz = (Int16) (1000.0d / (GlobalVariables.halTime - GlobalVariables.halTimeOld));
-            GlobalVariables.halTimeOld = GlobalVariables.halTime;
-            green.Write(!green.Read());
+            if (GlobalVariables.dateSet)
+            {
+                GlobalVariables.ticksZero = time.Ticks;
+                GlobalVariables.dateSet = false;
+            }
+            else
+            {
+                GlobalVariables.halTime = (time.Ticks - GlobalVariables.ticksZero) / 10000000.0d;
+ //               Debug.Print(GlobalVariables.halTime.ToString());
+                GlobalVariables.halTimeShifted = (UInt16)(GlobalVariables.halTime * 1000.0d);
+                GlobalVariables.hertz = (Int16)(1000.0d / (GlobalVariables.halTime - GlobalVariables.halTimeOld));
+                GlobalVariables.halTimeOld = GlobalVariables.halTime;
+                green.Write(!green.Read());
+            }
         }
 
         //

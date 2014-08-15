@@ -19,10 +19,14 @@ namespace marencoTune
         public static int y = 0;
         public static int z = 0;
         public static double halTime = 0;
+        public static UInt16 halTimeShifted = 0;
+        public static long ticksZero = 0;
+        public static bool dateSet = true;
         public static bool writeNow = false;
         public static Int16 zKeep = 0;
         public static double halTimeOld = 0;
         public static Int16 hertz = 0;
         public static byte throttleSettingOld = 0x3C;
+
     }
 }
