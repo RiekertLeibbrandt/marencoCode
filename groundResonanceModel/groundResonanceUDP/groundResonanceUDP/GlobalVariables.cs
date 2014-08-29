@@ -27,6 +27,8 @@ namespace marencoTune
         public static double halTimeOld = 0;
         public static Int16 hertz = 0;
         public static byte throttleSettingOld = 0x3C;
+        public static byte[] throttleByte = new byte[1] { 0 };
+        public static byte throttleOld = 0;
 
     }
 }
