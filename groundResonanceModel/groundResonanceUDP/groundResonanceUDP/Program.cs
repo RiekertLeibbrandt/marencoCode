@@ -99,7 +99,7 @@ namespace marencoTune
 
             acc.getValues(ref GlobalVariables.x, ref GlobalVariables.y, ref GlobalVariables.z);
             acc.clearInterrupt();
-            UInt16 zAnalog = (UInt16) analogIn.ReadRaw();
+            UInt16 xDig = (UInt16) (-GlobalVariables.x + 2048);
             UInt16 zDig = (UInt16) (-GlobalVariables.z + 2048);
 
             //
@@ -116,8 +116,8 @@ namespace marencoTune
                 byte[] junk = new byte[8] { 
                     (byte)(zDig & 0xFF), 
                     (byte)((zDig >> 8) & 0xFF),                // Only 2 bytes
-                    (byte)(zAnalog & 0xFF),
-                    (byte)((zAnalog >> 8) & 0xFF),
+                    (byte)(xDig & 0xFF),
+                    (byte)((xDig >> 8) & 0xFF),
                     (byte)(GlobalVariables.halTimeShifted & 0xFF), 
                     (byte)((GlobalVariables.halTimeShifted >> 8) & 0xFF),               // Only 2 bytes
                     (byte)(GlobalVariables.hertz & 0xFF), 
