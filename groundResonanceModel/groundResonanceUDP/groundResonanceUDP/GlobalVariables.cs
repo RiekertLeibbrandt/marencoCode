@@ -29,6 +29,11 @@ namespace marencoTune
         public static byte throttleSettingOld = 0x3C;
         public static byte[] throttleByte = new byte[1] { 0 };
         public static byte throttleOld = 0;
+        public static byte[] receivedMessage = new byte[4] { 0, 0, 0, 0 };
 
+        // The servo offsets
+        public const UInt32 servo1offset = 1000;
+        public const UInt32 servo2offset = 1000;
+        public const UInt32 servo3offset = 1000;
     }
 }
