@@ -32,8 +32,16 @@ namespace marencoTune
         public static byte[] receivedMessage = new byte[4] { 0, 0, 0, 0 };
 
         // The servo offsets
-        public const UInt32 servo1offset = 1000;
-        public const UInt32 servo2offset = 1000;
-        public const UInt32 servo3offset = 1000;
+        public const UInt32 servo1offset = 1040;    //1040
+        public const UInt32 servo2offset = 580;     //580
+        public const UInt32 servo3offset = 1400;    //1400
+
+        // Servo limits. I limit the pwm output, so that we can rezero and do whatever we want to.
+        public static UInt32 servo1u = 1673;
+        public static UInt32 servo1l = 1360;
+        public static UInt32 servo2u = 1252;
+        public static UInt32 servo2l = 940;
+        public static UInt32 servo3u = 2000;
+        public static UInt32 servo3l = 1720;
     }
 }
