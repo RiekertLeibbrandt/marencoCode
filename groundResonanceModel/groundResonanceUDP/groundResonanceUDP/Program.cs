@@ -35,6 +35,8 @@ using Marenco.Sensors;
 //  now have full collective/cyclic control via pwm output.
 //  This is driven by a MATLAB script. 
 //
+//  11 November, Becker fidled with adxl345. Put interrupt on
+//  D7, red LED. Needed to add multiple clear interrupts.
 
 
 namespace marencoTune
@@ -45,7 +47,7 @@ namespace marencoTune
         //  Global instances
        // static InterruptPort dataReady = new InterruptPort(Pins.GPIO_PIN_D3, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
 
-        public static InterruptPort accelInt = new InterruptPort(Pins.GPIO_PIN_D3, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);   
+        public static InterruptPort accelInt = new InterruptPort(Pins.GPIO_PIN_D7, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);   
         // Define PWM channels
         // Channel on the top end of the board. Pins D 5,6,9,10
         // Servo 1 is the back
@@ -59,12 +61,12 @@ namespace marencoTune
         // Now other crap.
         public static InterruptPort hal = new InterruptPort(Pins.GPIO_PIN_A2, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
         public static ADXL345 acc = new ADXL345(Pins.GPIO_PIN_A5, 1000);
-        static OutputPort red = new OutputPort(Pins.GPIO_PIN_D7, false);
+//        static OutputPort red = new OutputPort(Pins.GPIO_PIN_D7, false);
         static OutputPort green = new OutputPort(Pins.GPIO_PIN_D8, false);
         public static Microsoft.SPOT.Net.NetworkInformation.NetworkInterface NI = Microsoft.SPOT.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()[0];
         public static Socket sockOut = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static Socket sockIn = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        public static IPEndPoint sendingEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.243"), 49001);    // This is James' desktop.
+        public static IPEndPoint sendingEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.231"), 49001);    // This is skollie
         public static IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.238") , 49002);   // This is the netduino's ip.
 
         //public static AnalogInput analogIn = new AnalogInput(Cpu.AnalogChannel.ANALOG_4);
@@ -83,9 +85,11 @@ namespace marencoTune
             Thread.Sleep(100);
             acc.setUpInterrupt();
             Thread.Sleep(100);
+            accelInt.OnInterrupt += accelInt_OnInterrupt;
+            acc.clearInterrupt();
+            Thread.Sleep(100); 
             acc.clearInterrupt();
             Thread.Sleep(100);
-            accelInt.OnInterrupt += accelInt_OnInterrupt;
             
             // Start the pwms.
             motorDrive.Start();
@@ -102,10 +106,10 @@ namespace marencoTune
             //  Bind the IP address, etc
             //
 
-            //Debug.Print(NI.IPAddress.ToString());
-            //sockIn.ReceiveTimeout = 5;
-            //sockIn.Bind(receiveEndPoint);
-            Debug.Print("Some crap");
+            Debug.Print(NI.IPAddress.ToString());
+            sockIn.ReceiveTimeout = 5;
+            sockIn.Bind(receiveEndPoint);
+//            Debug.Print("Some crap");
             //  Snooze
             
 
@@ -115,14 +119,14 @@ namespace marencoTune
 
         static void accelInt_OnInterrupt(uint data1, uint data2, DateTime time)
         {
-            Debug.Print("Interrupting Sheep");
+           // Debug.Print("Interrupting Sheep");
 
             acc.getValues(ref GlobalVariables.x, ref GlobalVariables.y, ref GlobalVariables.z);
             acc.clearInterrupt();
 
-            //UInt16 xDig = (UInt16) (- GlobalVariables.x + 2048);
+            UInt16 xDig = (UInt16) (- GlobalVariables.x + 2048);
 
-            //UInt16 zDig = (UInt16) (-GlobalVariables.z + 2048);
+            UInt16 zDig = (UInt16) (-GlobalVariables.z + 2048);
 
             //
             //  Convert to bytes and write out.
@@ -135,69 +139,69 @@ namespace marencoTune
             //  Make the minimum on setting 0x3C to save the motor
             //
 
-            //byte[] junk = new byte[8] { 
-            //    (byte)(zDig & 0xFF), 
-            //    (byte)((zDig >> 8) & 0xFF),                // Only 2 bytes
-            //    (byte)(xDig & 0xFF),
-            //    (byte)((xDig >> 8) & 0xFF),
-            //    (byte)(GlobalVariables.halTimeShifted & 0xFF), 
-            //    (byte)((GlobalVariables.halTimeShifted >> 8) & 0xFF),               // Only 2 bytes
-            //    (byte)(GlobalVariables.hertz & 0xFF), 
-            //    (byte)((GlobalVariables.hertz >> 8) & 0xFF)};               // Only 2 bytes
+            byte[] junk = new byte[8] { 
+                (byte)(zDig & 0xFF), 
+                (byte)((zDig >> 8) & 0xFF),                // Only 2 bytes
+                (byte)(xDig & 0xFF),
+                (byte)((xDig >> 8) & 0xFF),
+                (byte)(GlobalVariables.halTimeShifted & 0xFF), 
+                (byte)((GlobalVariables.halTimeShifted >> 8) & 0xFF),               // Only 2 bytes
+                (byte)(GlobalVariables.hertz & 0xFF), 
+                (byte)((GlobalVariables.hertz >> 8) & 0xFF)};               // Only 2 bytes
 
-            //  sockOut.SendTo(junk, sendingEndPoint);
+              sockOut.SendTo(junk, sendingEndPoint);
 
             //
             //  Get the power setting and cyclic settings
             //
-            // int bytesAvailable = sockIn.Available;
-            //Debug.Print(bytesAvailable.ToString());
-            // if (bytesAvailable > 0)
-            //{
+            int bytesAvailable = sockIn.Available;
+            // Debug.Print(bytesAvailable.ToString());
+            if (bytesAvailable > 0)
+            {
             // I'm not sure of the flags here.
-            //     int byteCount = sockIn.Receive(GlobalVariables.receivedMessage,4,SocketFlags.None);
-            //     Debug.Print(byteCount.ToString());
-            //      GlobalVariables.throttleByte[0] = GlobalVariables.receivedMessage[0];
-            //  }
+                 int byteCount = sockIn.Receive(GlobalVariables.receivedMessage,4,SocketFlags.None);
+                // Debug.Print(byteCount.ToString());
+                 GlobalVariables.throttleByte[0] = GlobalVariables.receivedMessage[0];
+              }
 
             //
             //  Change to power setting accordingly. We'll set the servos here as well.
             //
-            //            if (GlobalVariables.throttleByte[0] != GlobalVariables.throttleOld)
-            //            {
-            ////                Debug.Print(GlobalVariables.throttleByte[0].ToString());
-            //                motorDrive.Duration = (UInt32)((double) GlobalVariables.throttleByte[0] * 980d / 512d + 1000);
+            //if (GlobalVariables.throttleByte[0] != GlobalVariables.throttleOld)
+            //{
+                               Debug.Print(GlobalVariables.throttleByte[0].ToString());
+                motorDrive.Duration = (UInt32)((double)GlobalVariables.throttleByte[0] * 980d / 512d + 1000);
 
-            //                // Do some mixing. Servos 1 & 3 are +, 2 is -. For collective.
-            //                // We take everything relative to 127. So it is 127 + collective. No cyclic for now.
-            //                UInt32 servo1out = (UInt32)((double)(127 + (GlobalVariables.receivedMessage[3] - 127)) * 1000d / 256d + GlobalVariables.servo1offset);
-            //                UInt32 servo2out = (UInt32)((double)(127 - (GlobalVariables.receivedMessage[3] - 127)) * 1000d / 256d + GlobalVariables.servo2offset);
-            //                UInt32 servo3out = (UInt32)((double)(127 + (GlobalVariables.receivedMessage[3] - 127)) * 1000d / 256d + GlobalVariables.servo3offset);
+                // Do some mixing. Servos 1 & 3 are +, 2 is -. For collective.
+                // We take everything relative to 127. So it is 127 + collective. No cyclic for now.
+                UInt32 servo1out = (UInt32)((double)(127 + (GlobalVariables.receivedMessage[3] - 127)) * 1000d / 256d + GlobalVariables.servo1offset);
+                UInt32 servo2out = (UInt32)((double)(127 - (GlobalVariables.receivedMessage[3] - 127) + (GlobalVariables.receivedMessage[1] - 127)) * 1000d / 256d + GlobalVariables.servo2offset);
+                UInt32 servo3out = (UInt32)((double)(127 + (GlobalVariables.receivedMessage[3] - 127) + (GlobalVariables.receivedMessage[1] - 127)) * 1000d / 256d + GlobalVariables.servo3offset);
 
-            //                // Check limits.
-            //                // 1.
-            //                if (servo1out > GlobalVariables.servo1u)
-            //                    servo1out = GlobalVariables.servo1u;
-            //                if (servo1out < GlobalVariables.servo1l)
-            //                    servo1out = GlobalVariables.servo1l;
-            //                // 2.
-            //                if (servo2out > GlobalVariables.servo2u)
-            //                    servo2out = GlobalVariables.servo2u;
-            //                if (servo2out < GlobalVariables.servo2l)
-            //                    servo2out = GlobalVariables.servo2l;
-            //                // 3.
-            //                if (servo3out > GlobalVariables.servo3u)
-            //                    servo3out = GlobalVariables.servo3u;
-            //                if (servo3out < GlobalVariables.servo3l)
-            //                    servo3out = GlobalVariables.servo3l;
+                // Check limits.
+                // 1.
+                if (servo1out > GlobalVariables.servo1u)
+                    servo1out = GlobalVariables.servo1u;
+                if (servo1out < GlobalVariables.servo1l)
+                    servo1out = GlobalVariables.servo1l;
+                // 2.
+                if (servo2out > GlobalVariables.servo2u)
+                    servo2out = GlobalVariables.servo2u;
+                if (servo2out < GlobalVariables.servo2l)
+                    servo2out = GlobalVariables.servo2l;
+                // 3.
+                if (servo3out > GlobalVariables.servo3u)
+                    servo3out = GlobalVariables.servo3u;
+                if (servo3out < GlobalVariables.servo3l)
+                    servo3out = GlobalVariables.servo3l;
 
-            //                // Set PWMs.
-            //                servo1.Duration = servo1out;
-            //                servo2.Duration = servo2out;
-            //                servo3.Duration = servo3out;
+                // Set PWMs.
+                servo1.Duration = servo1out;
+                servo2.Duration = servo2out;
+                servo3.Duration = servo3out;
 
-            //            }
-            //            GlobalVariables.throttleOld = GlobalVariables.throttleByte[0];
+            //}
+            GlobalVariables.throttleOld = GlobalVariables.throttleByte[0];
         }
 
 
