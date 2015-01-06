@@ -12,7 +12,7 @@ namespace NetduinoApplication2
     public class Program
     {
 
-        static OutputPort relay = new OutputPort(Pins.GPIO_PIN_A0, false);
+        static OutputPort relay = new OutputPort(Pins.GPIO_PIN_A5, false);
         static OutputPort greenLed = new OutputPort(Pins.GPIO_PIN_D8, false);
         static OutputPort redLed = new OutputPort(Pins.GPIO_PIN_D7, true);
 
@@ -21,18 +21,18 @@ namespace NetduinoApplication2
 
             while (true)
             {
-               // Thread.Sleep(5000);
+                Thread.Sleep(5000);
                 relay.Write(true);
                 greenLed.Write(!greenLed.Read());
                 redLed.Write(!redLed.Read());
 //                Debug.Print("ON");
-                Thread.Sleep(2000);
+                Thread.Sleep(10000);
                 relay.Write(false);
                 greenLed.Write(!greenLed.Read());
                 redLed.Write(!redLed.Read());
 //                Debug.Print("OFF");
-                Thread.Sleep(2000);
-                // write your code here
+                Thread.Sleep(5000);
+                
             }
 
         }

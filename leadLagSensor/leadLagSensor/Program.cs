@@ -22,7 +22,7 @@ namespace leadLagSensor
 
             BlueSerial ser = new BlueSerial();
 
-            AnalogInput input = new AnalogInput(AnalogChannels.ANALOG_PIN_A4);
+            AnalogInput input = new AnalogInput(AnalogChannels.ANALOG_PIN_A0);
 
             OutputPort led = new OutputPort(Pins.ONBOARD_LED, false);
 
@@ -33,10 +33,11 @@ namespace leadLagSensor
             while (true)
             {
 
-                
+
                 
                 //  0 e 1023 (ADC a 10 bit)
                 rawValue = input.ReadRaw();
+                Debug.Print(rawValue.ToString());
 
                 ll =  (UInt16)rawValue;
                 
