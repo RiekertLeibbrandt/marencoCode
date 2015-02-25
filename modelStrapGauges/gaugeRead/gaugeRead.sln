@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gaugeRead", "gaugeRead\gaugeRead.csproj", "{998D464B-EA13-4D69-9577-62B991411B87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marenco.Comms", "..\..\..\marencoLibraries\Marenco.Comms\Marenco.Comms\Marenco.Comms.csproj", "{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{998D464B-EA13-4D69-9577-62B991411B87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{998D464B-EA13-4D69-9577-62B991411B87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{998D464B-EA13-4D69-9577-62B991411B87}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{998D464B-EA13-4D69-9577-62B991411B87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{998D464B-EA13-4D69-9577-62B991411B87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{998D464B-EA13-4D69-9577-62B991411B87}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

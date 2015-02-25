@@ -7,43 +7,21 @@ using Microsoft.SPOT.Hardware;
 using SecretLabs.NETMF.Hardware;
 using SecretLabs.NETMF.Hardware.Netduino;
 using System.IO.Ports;
+using Marenco.Comms;
 using Marenco.Sensors;
 
 //
-//  A blade balancing application based on
-//  a Hal effect sensor for azimuth, a 3 axis
-//  acceleraqtion and a blue tooth serial data 
-//  write. This was written to balance the blades 
-//  an the new rotor head model and to use during
-//  testing.
+//  A wind tunnel driver for the rotor head. We decided to
+//  go away from Matlab and do the data gathering using
+//  Bluetooth only.
 //
-//  Becker and Riekert, June 2014.
-//
-//  June 24
-//  Almost brke the model.
-//  Becker changes Baud rate to 57600 and
-//  scale the power to half for 256
-//
-//  28 June, pull speed change out of read interrupt,
-//  reduce time to 24 bits and in milliseconds.
-//  
-//  13 August, add an Analog accelerometer.
-//  Write out interrupt time as well.
-//
-//  31 October
-//  James modifies this for the new ring model. We
-//  now have full collective/cyclic control via pwm output.
-//  This is driven by a MATLAB script. 
-//
-//  11 November, Becker fidled with adxl345. Put interrupt on
-//  D7, red LED. Needed to add multiple clear interrupts.
 
 
-namespace marencoTune
+namespace windTunnelRotorDriver
 {
     public class Program
     {
-        public const int maxSpeed = 70;    // This is effectively ground idle. 180;
+        public const int maxSpeed = 75;    // This is effectively ground idle. 180;
         //  Global instances
         // static InterruptPort dataReady = new InterruptPort(Pins.GPIO_PIN_D3, false, Port.ResistorMode.Disabled, Port.InterruptMode.InterruptEdgeHigh);
 
@@ -63,30 +41,28 @@ namespace marencoTune
         public static ADXL345 acc = new ADXL345(Pins.GPIO_PIN_A5, 1000);
         //        static OutputPort red = new OutputPort(Pins.GPIO_PIN_D7, false);
         static OutputPort green = new OutputPort(Pins.GPIO_PIN_D8, false);
-        public static Microsoft.SPOT.Net.NetworkInformation.NetworkInterface NI = Microsoft.SPOT.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()[0];
-        public static Socket sockOut = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        public static Socket sockIn = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-<<<<<<< HEAD
-        public static IPEndPoint sendingEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.231"), 49001);    // This is skollie
-        public static IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.249"), 49002);   // This is the netduino's ip.
-=======
-        public static IPEndPoint sendingEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.244"), 49001);    // This is skollie
-        public static IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.238") , 49002);   // This is the netduino's ip.
->>>>>>> origin/newRingRotor
 
-        //public static AnalogInput analogIn = new AnalogInput(Cpu.AnalogChannel.ANALOG_4);
-
-        //
-        //  Get power setting from UDP
-        //
-
+        static BlueSerial phone = new BlueSerial();
 
         public static void Main()
         {
+            int setTime = 20000;
+            int col0 = 100;
+            int cyc0 = 137;
+            int deltaCol = 10;
+            int deltaCyc = 10;
+
+            //
+            //  Set the initial values
+            //
+
+            GlobalVariables.receivedMessage[1] = (byte)cyc0;
+            GlobalVariables.receivedMessage[3] = (byte)col0;
+
             // Start everything
             hal.OnInterrupt += hal_OnInterrupt;
             acc.setUpAccelRate(200);
-            acc.setRange(enRange.range2g);
+            acc.setRange(enRange.range4g);
             Thread.Sleep(100);
             acc.setUpInterrupt();
             Thread.Sleep(100);
@@ -102,20 +78,58 @@ namespace marencoTune
             servo2.Start();
             servo3.Start();
 
-            //          byte[] outBuffer = System.Text.Encoding.UTF8.GetBytes("Motor active");
-
-
-
-
             //
-            //  Bind the IP address, etc
+            //  Slowly ramp up the rotor
             //
 
-            Debug.Print(NI.IPAddress.ToString());
-            sockIn.ReceiveTimeout = 5;
-            sockIn.Bind(receiveEndPoint);
-            Debug.Print("Some crap");
-            //  Snooze
+            int curSpeed = 0;
+            while (curSpeed <= maxSpeed)
+            {
+                curSpeed += 1;
+                Thread.Sleep(500);
+                GlobalVariables.throttleByte[0] = (byte)curSpeed;
+                Debug.Print(curSpeed.ToString());
+            }
+
+            Thread.Sleep(setTime);
+            //
+            //  Go through a set sequence
+            //
+
+            GlobalVariables.receivedMessage[1] = (byte)(cyc0+0);
+            GlobalVariables.receivedMessage[3] = (byte)(col0+deltaCol);
+            Thread.Sleep(setTime);
+
+            GlobalVariables.receivedMessage[1] = (byte)(cyc0 + 0);
+            GlobalVariables.receivedMessage[3] = (byte)(col0 - deltaCol);
+            Thread.Sleep(setTime);
+
+
+            GlobalVariables.receivedMessage[1] = (byte)(cyc0 + deltaCyc);
+            GlobalVariables.receivedMessage[3] = (byte)(col0 + 0);
+            Thread.Sleep(setTime);
+
+            GlobalVariables.receivedMessage[1] = (byte)(cyc0 + deltaCyc);
+            GlobalVariables.receivedMessage[3] = (byte)(col0 + deltaCol);
+            Thread.Sleep(setTime);
+
+            GlobalVariables.receivedMessage[1] = (byte)(cyc0 + deltaCyc);
+            GlobalVariables.receivedMessage[3] = (byte)(col0 - deltaCol);
+            Thread.Sleep(setTime);
+
+
+            GlobalVariables.receivedMessage[1] = (byte)(cyc0 - deltaCyc);
+            GlobalVariables.receivedMessage[3] = (byte)(col0 + 0);
+            Thread.Sleep(setTime);
+
+            GlobalVariables.receivedMessage[1] = (byte)(cyc0 - deltaCyc);
+            GlobalVariables.receivedMessage[3] = (byte)(col0 + deltaCol);
+            Thread.Sleep(setTime);
+
+            GlobalVariables.receivedMessage[1] = (byte)(cyc0 - deltaCyc);
+            GlobalVariables.receivedMessage[3] = (byte)(col0 - deltaCol);
+            Thread.Sleep(setTime);
+
 
 
 
@@ -154,34 +168,25 @@ namespace marencoTune
                 (byte)(GlobalVariables.hertz & 0xFF), 
                 (byte)((GlobalVariables.hertz >> 8) & 0xFF)};               // Only 2 bytes
 
-            sockOut.SendTo(junk, sendingEndPoint);
+            byte[] byteOut = System.Text.Encoding.UTF8.GetBytes("E" +
+                zDig.ToString() + "," +
+                xDig.ToString() + "," +
+                GlobalVariables.hertz.ToString() + "," +
+                GlobalVariables.receivedMessage[0].ToString() + "," +
+                GlobalVariables.receivedMessage[1].ToString() + "," +
+                GlobalVariables.receivedMessage[3].ToString() +
+"\n");
+            phone.Print(byteOut);
 
-            //
-            //  Get the power setting and cyclic settings
-            //
-            int bytesAvailable = sockIn.Available;
-            // Debug.Print(bytesAvailable.ToString());
-            if (bytesAvailable > 0)
-            {
-                // I'm not sure of the flags here.
-                int byteCount = sockIn.Receive(GlobalVariables.receivedMessage, 4, SocketFlags.None);
-                // Debug.Print(byteCount.ToString());
-                GlobalVariables.throttleByte[0] = GlobalVariables.receivedMessage[0];
-            }
 
-            //
-            //  Change to power setting accordingly. We'll set the servos here as well.
-            //
-            //if (GlobalVariables.throttleByte[0] != GlobalVariables.throttleOld)
-            //{
 //            Debug.Print(GlobalVariables.throttleByte[0].ToString());
             motorDrive.Duration = (UInt32)((double)GlobalVariables.throttleByte[0] * 980d / 512d + 1000);
 
             // Do some mixing. Servos 1 & 3 are +, 2 is -. For collective.
             // We take everything relative to 127. So it is 127 + collective. No cyclic for now.
-            UInt32 servo1out = (UInt32)((double)(127 + (GlobalVariables.receivedMessage[3] - 127) + (GlobalVariables.receivedMessage[1] - 127)) * 1000d / 256d + GlobalVariables.servo1offset);
+            UInt32 servo1out = (UInt32)((double)(127 + (GlobalVariables.receivedMessage[3] - 127)) * 1000d / 256d + GlobalVariables.servo1offset);
             UInt32 servo2out = (UInt32)((double)(127 - (GlobalVariables.receivedMessage[3] - 127) + (GlobalVariables.receivedMessage[1] - 127)) * 1000d / 256d + GlobalVariables.servo2offset);
-            UInt32 servo3out = (UInt32)((double)(127 + (GlobalVariables.receivedMessage[3] - 127)) * 1000d / 256d + GlobalVariables.servo3offset);
+            UInt32 servo3out = (UInt32)((double)(127 + (GlobalVariables.receivedMessage[3] - 127) + (GlobalVariables.receivedMessage[1] - 127)) * 1000d / 256d + GlobalVariables.servo3offset);
 
             // Check limits.
             // 1.
@@ -209,7 +214,6 @@ namespace marencoTune
             GlobalVariables.throttleOld = GlobalVariables.throttleByte[0];
         }
 
-
         static void hal_OnInterrupt(uint data1, uint data2, DateTime time)
         {
             if (GlobalVariables.dateSet)
@@ -227,6 +231,5 @@ namespace marencoTune
                 green.Write(!green.Read());
             }
         }
-
     }
 }
