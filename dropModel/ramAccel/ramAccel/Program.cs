@@ -32,13 +32,19 @@ namespace NetduinoApplication1
             flex.Start();
             serial.DataReceived += serial_DataReceived;
             serial.Open();
+            while (true)
+            {
+                Thread.Sleep(100);
+                int acc = accRead.ReadRaw();
+                Debug.Print(acc.ToString());
+            }
             //while (true)
             //{
-            //    Thread.Sleep(100);
-            //    int acc = accRead.ReadRaw();
-            //    Debug.Print(acc.ToString());
+            //    int a = accRead.ReadRaw();
+            //    Debug.Print(a.ToString());
             //}
-            Thread.Sleep(Timeout.Infinite);
+
+//            Thread.Sleep(Timeout.Infinite);
         }
 
         static void serial_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -91,6 +97,9 @@ namespace NetduinoApplication1
             {
                 reading[i] = (UInt16) accRead.ReadRaw();
                 readTime[i] = (UInt16)((Int32) Utility.GetMachineTime().Ticks / ticksPerMicroSecond);
+                //for (int j = 0; i < 100; j++)
+                //{
+                //}
 //                readTime[i] = (UInt16) ((UInt32) (Utility.GetMachineTime().Ticks) >> 3);
             }
         }
