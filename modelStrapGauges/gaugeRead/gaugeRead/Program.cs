@@ -51,7 +51,7 @@ namespace leadLagSensor
                     rawAve1 = rawAve1 + rawValue1;
                     rawValue2 = input2.ReadRaw();
                     rawAve2 = rawAve2 + rawValue2;
-                    Thread.Sleep(2);
+                    Thread.Sleep(2); 
                 }
 
                 rawAve1 = rawAve1 / (i-1);
@@ -76,7 +76,7 @@ namespace leadLagSensor
                // ser.Print(strain1);
                // Thread.Sleep(5);
                 ser.Print(data);
-               // Thread.Sleep(5);
+                Thread.Sleep(5);
             }
 
         }
