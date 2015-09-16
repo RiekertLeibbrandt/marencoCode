@@ -57,25 +57,27 @@ namespace leadLagSensor
                 rawAve1 = rawAve1 / (i-1);
                 rawAve2 = rawAve2 / (i-1);
 
-                rawAve1kN = (float)((rawAve1 - 2084) / -943.20518975);  // 2 kN loadcell calibration under "loadcellcalibration.xlsx"
+                rawAve1kN = (float)((rawAve1 - 2071) / -943.20518975);  // 2 kN loadcell calibration under "loadcellcalibration.xlsx"
                 rawAve2kN = (float)((rawAve2 - 2064) / -13.75116883);  // 200 kN loadcell calibration under "loadcellcalibration.xlsx"
 
 
                 // Print some values to the output window. This is primative, but works for now.
 
-                Debug.Print("Value 1 Ave: " + rawAve1.ToString() + "    Value 1 Raw: " + rawValue1.ToString() + "    Value 1 kN: " + rawAve1kN.ToString() + "    Value 2 Ave: " + rawAve2.ToString() + "    Value 2 Raw: " + rawValue2.ToString() + "    Value 2 kN: " + rawAve2kN.ToString());
+                Debug.Print("Value 1 Ave: " + rawAve1.ToString() + "    Value 1 Raw: " + rawValue1.ToString() + "    2kN Load Cell Value 1 kN: " + rawAve1kN.ToString() + "    Value 2 Ave: " + rawAve2.ToString() + "    Value 2 Raw: " + rawValue2.ToString() + "    200kN Load Cell Value 2 kN: " + rawAve2kN.ToString());
                 
                 uintIn1 = (UInt16)rawAve1;
                 uintIn2 = (UInt16)rawAve2;
 
                 
                 // Send the data via bluetooth
+                string junk = (uintIn1.ToString() + " " + uintIn2.ToString() + "\n");
 
                 byte[] data = new byte[4] { (byte)(uintIn1 & 0xFF), (byte)((uintIn1 >> 8) & 0xFF), (byte)(uintIn2 & 0xFF), (byte)((uintIn2 >> 8) & 0xFF)};  // Small loadcell first, then large loadcell
 
                // ser.Print(strain1);
                // Thread.Sleep(5);
-                ser.Print(data);
+                ser.Print(junk);
+                //ser.Print(data);
                 Thread.Sleep(5);
             }
 
