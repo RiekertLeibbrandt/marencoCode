@@ -1,18 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <AssemblyName>checkBlue</AssemblyName>
+    <AssemblyName>groundResonanceUDP</AssemblyName>
     <OutputType>Exe</OutputType>
-    <RootNamespace>checkBlue</RootNamespace>
+    <RootNamespace>groundResonanceUDP</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{093B4D88-0D50-4C93-AEF4-27413779290C}</ProjectGuid>
+    <ProjectGuid>{DE491CD2-A144-469E-83C8-CE9578CA9AA2}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
     <DeployDevice>Netduino</DeployDevice>
     <DeployTransport>USB</DeployTransport>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +32,7 @@
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
+    <Compile Include="GlobalVariables.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
@@ -45,11 +45,12 @@
     <Reference Include="SecretLabs.NETMF.Hardware" />
     <Reference Include="SecretLabs.NETMF.Hardware.Netduino" />
     <Reference Include="System" />
+    <Reference Include="System.Net.Security" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\marencoLibraries\Marenco.Comms\Marenco.Comms\Marenco.Comms.csproj">
-      <Project>{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}</Project>
-      <Name>Marenco.Comms</Name>
+    <ProjectReference Include="..\..\..\..\marencoLibraries\Marenco.Sensors\Marenco.Sensors\Marenco.Sensors.csproj">
+      <Project>{6C9F4D24-7B74-421F-87EF-35D106E9FF6D}</Project>
+      <Name>Marenco.Sensors</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

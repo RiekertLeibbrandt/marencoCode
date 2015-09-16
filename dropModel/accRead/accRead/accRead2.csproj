@@ -1,18 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <AssemblyName>checkBlue</AssemblyName>
+    <AssemblyName>accRead</AssemblyName>
     <OutputType>Exe</OutputType>
-    <RootNamespace>checkBlue</RootNamespace>
+    <RootNamespace>accRead</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{093B4D88-0D50-4C93-AEF4-27413779290C}</ProjectGuid>
+    <ProjectGuid>{C005DC43-F8C8-4240-AAA3-7DC00A2C2775}</ProjectGuid>
     <TargetFrameworkVersion>v4.3</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
     <DeployDevice>Netduino</DeployDevice>
     <DeployTransport>USB</DeployTransport>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,19 +36,17 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Marenco.Comms">
+      <HintPath>..\..\..\..\..\..\..\..\..\marenco\marencoLibraries\Marenco.Comms\Marenco.Comms\bin\Debug\Marenco.Comms.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.SPOT.Hardware" />
     <Reference Include="Microsoft.SPOT.Hardware.PWM" />
     <Reference Include="Microsoft.SPOT.Hardware.SerialPort" />
     <Reference Include="Microsoft.SPOT.Native" />
     <Reference Include="Microsoft.SPOT.Net" />
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="SecretLabs.NETMF.Hardware" />
     <Reference Include="SecretLabs.NETMF.Hardware.Netduino" />
     <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\marencoLibraries\Marenco.Comms\Marenco.Comms\Marenco.Comms.csproj">
-      <Project>{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}</Project>
-      <Name>Marenco.Comms</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sendBlue", "sendBlue.csproj", "{D472704B-90D6-4471-A747-2A8A07BC3400}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marenco.Comms", "..\..\..\..\..\marencoLibraries\Marenco.Comms\Marenco.Comms\Marenco.Comms.csproj", "{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D472704B-90D6-4471-A747-2A8A07BC3400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D472704B-90D6-4471-A747-2A8A07BC3400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D472704B-90D6-4471-A747-2A8A07BC3400}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{D472704B-90D6-4471-A747-2A8A07BC3400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D472704B-90D6-4471-A747-2A8A07BC3400}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D472704B-90D6-4471-A747-2A8A07BC3400}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2B6CAF3-EB07-4A0B-9F93-6905343BA62B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
