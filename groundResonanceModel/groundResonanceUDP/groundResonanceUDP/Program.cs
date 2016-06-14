@@ -66,8 +66,13 @@ namespace marencoTune
         public static Microsoft.SPOT.Net.NetworkInformation.NetworkInterface NI = Microsoft.SPOT.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()[0];
         public static Socket sockOut = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static Socket sockIn = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+<<<<<<< HEAD
         public static IPEndPoint sendingEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.239"), 49001);    // This is james' desktop
         public static IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.240"), 49002);   // This is the netduino's ip.
+=======
+        public static IPEndPoint sendingEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.241"), 49001);    // This is james' desktop
+        public static IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Parse("192.168.60.250"), 49002);   // This is the netduino's ip.
+>>>>>>> origin/master
 
 
         //public static AnalogInput analogIn = new AnalogInput(Cpu.AnalogChannel.ANALOG_4);
